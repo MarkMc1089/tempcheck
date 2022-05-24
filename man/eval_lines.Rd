@@ -17,6 +17,7 @@ Reads a plain text file line by line, evaluating each line. Useful for
 creating variables dynamically, e.g. reading in parameters.
 }
 \examples{
+\dontrun{
 filepath <- tempfile()
 writeLines(
   text = "LEFT = \"right\"",
@@ -26,4 +27,5 @@ eval_lines(filepath)
 print(LEFT)
 unlink(filepath) # delete temporary file
 rm(left) # remove example variable
+}
 }

@@ -8,7 +8,6 @@
 #' @param stack Stack option for highcharter.
 #'
 #' @return A highcharter object with theme applied.
-#' @export
 theme_nhsbsa <- function(hc, palette = NA, stack = "normal") {
 
   # Load theme from nhsbsaR package
@@ -46,9 +45,9 @@ theme_nhsbsa <- function(hc, palette = NA, stack = "normal") {
 #' @param filepath Filepath as a String.
 #'
 #' @return Nothing
-#' @export
 #'
 #' @examples
+#' \dontrun{
 #' filepath <- tempfile()
 #' writeLines(
 #'   text = "LEFT = \"right\"",
@@ -58,6 +57,7 @@ theme_nhsbsa <- function(hc, palette = NA, stack = "normal") {
 #' print(LEFT)
 #' unlink(filepath) # delete temporary file
 #' rm(left) # remove example variable
+#' }
 eval_lines <- function(filepath) {
   con <- file(filepath, open = "r")
   on.exit(close(con))
@@ -65,4 +65,8 @@ eval_lines <- function(filepath) {
   while (length(line <- readLines(con, n = 1, warn = FALSE)) > 0) {
     eval(parse(text = line), envir = .GlobalEnv)
   }
+}
+
+nth_preceding_month <- function(months, n) {
+  sort(unique(months), decreasing = TRUE)[n + 1]
 }

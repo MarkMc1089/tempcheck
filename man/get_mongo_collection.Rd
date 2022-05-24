@@ -38,7 +38,7 @@ get_mongo_collection(
 )
 
 # Replace the data in my_collection (in the my_db database) with the data in
-# my dataframe, then get that data
+# my_dataframe, then get that data
 get_mongo_collection(
   "my_collection", "my_db",
   connection_string = glue::glue(
