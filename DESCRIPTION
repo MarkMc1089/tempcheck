@@ -15,6 +15,7 @@ Imports:
     glue,
     golem (>= 0.3.1),
     highcharter (>= 0.8.2),
+    lubridate,
     magrittr (>= 2.0.1),
     markdown (>= 1.1),
     mongolite (>= 2.3.1),
@@ -24,12 +25,13 @@ Imports:
     shiny (>= 1.6.0),
     dplyr,
     tidyr,
-    lubridate,
+    TileMaker,
     stringr,
     stats
 Remotes:
     nhsbsa-data-analytics/nhsbsaR
     JohnCoene/countup
+    DataStrategist/TileMaker
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2

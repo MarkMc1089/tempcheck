@@ -11,7 +11,7 @@ app_ui <- function(request) {
     fluidPage(
       br(),
       fluidRow(
-        style = "align-content:center",
+        style="text-align: -webkit-center;",
         col_1(),
         col_2(mod_rating_image_ui("image_sun")),
         col_2(mod_rating_image_ui("image_sun_cloud")),
@@ -21,13 +21,13 @@ app_ui <- function(request) {
         col_1()
       ),
       fluidRow(
-        style = "align-content:center",
+        style="text-align: -webkit-center;",
         col_1(),
-        col_2(mod_countup_ui("countup_sun")),
-        col_2(mod_countup_ui("countup_sun_cloud")),
-        col_2(mod_countup_ui("countup_cloud")),
-        col_2(mod_countup_ui("countup_cloud_rain")),
-        col_2(mod_countup_ui("countup_cloud_storm")),
+        col_2(mod_tile_ui("countup_sun")),
+        col_2(mod_tile_ui("countup_sun_cloud")),
+        col_2(mod_tile_ui("countup_cloud")),
+        col_2(mod_tile_ui("countup_cloud_rain")),
+        col_2(mod_tile_ui("countup_cloud_storm")),
         col_1()
       ),
       mod_table_ui("table_1"),

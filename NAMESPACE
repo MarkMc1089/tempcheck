@@ -2,6 +2,7 @@
 
 export("%>%")
 export(run_app)
+importFrom(TileMaker,solo_box)
 importFrom(countup,countup)
 importFrom(countup,countupOutput)
 importFrom(countup,renderCountup)
