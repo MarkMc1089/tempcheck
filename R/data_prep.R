@@ -12,13 +12,12 @@ data_prep <- function(raw_data) {
   data <- raw_data %>%
     slice(-1) %>%
     select(
-      .data$ID.endDate,
+      .data$date,
       .data$reason,
       .data$team,
-      .data$ratingmerge
+      .data$rating
     ) %>%
-    rename(ID.date = ID.endDate) %>%
-    mutate(ID.date = lubridate::dmy(.data$ID.date))
+    mutate(date = lubridate::dmy(.data$date))
 
   save(data, file = "data/data.rda")
   data
