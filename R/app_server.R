@@ -1,14 +1,29 @@
-
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
 #'
 #' @noRd
 app_server <- function(input, output, session) {
+  eval_lines(".snap-credentials")
   eval_lines(".mongo-credentials")
 
   r <- rv()
 
-  load_data(r, "data")
+  load_data(
+    r,
+    glue(SNAP_URL, SURVEY_ID = "55db4a62-7a8d-4df8-b8aa-0bf2c02a48a2"),
+    c(
+      'X-USERNAME' = SNAP_USER,
+      'X-API-KEY'  = SNAP_API_KEY
+    ),
+    list(restrictedVariables = "V18,V56,V58,V49"),
+    glue(
+      "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
+      "/?tls=true&retryWrites=true&w=majority"
+    ),
+    "tempcheck",
+    "tempcheck_data",
+    replace = FALSE
+  )
 
   mod_rating_image_server("image_sun", "sun")
   mod_rating_image_server("image_sun_cloud", "sun_cloud")

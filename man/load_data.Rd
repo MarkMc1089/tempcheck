@@ -2,28 +2,51 @@
 % Please edit documentation in R/fct_helpers.R
 \name{load_data}
 \alias{load_data}
-\title{Load data from mongoDB}
+\title{Load data from MongoDB}
 \usage{
-load_data(r, data)
+load_data(
+  r,
+  snap_url,
+  headers,
+  query,
+  mongo_url,
+  db,
+  collection,
+  replace = TRUE
+)
 }
 \arguments{
 \item{r}{A reactiveValues object}
 
-\item{data}{Either "data" or "targets"}
+\item{snap_url}{URL of SNAP server}
+
+\item{headers}{A named character vector of header keys and values. This allows
+for the `X-USERNAME` and `X-API-KEY` headers to be set for SNAP  authentication.}
+
+\item{query}{A named list of query params and values. This allows the
+`restrictedValues` param to be set.}
+
+\item{db}{Name of the database the collection is in.}
+
+\item{collection}{Name of the collection.}
+
+\item{replace}{Default is FALSE. When TRUE, all documents are dropped in the
+collection first, effectively overwriting it.}
 }
 \value{
-Nothing - a new child of r is created to hold the data.
+Nothing - the data is stored in r$data.
 }
 \description{
-Attempts to read data from specified mongoDB collection. Once
-read, the raw data is cleaned and prepared. If an error occurs in either of
-these 2 steps, data is read from an .rda file in the data folder - this
-contains the last successfully read data from the mongoDB collection.
+After triggering the update of the MongoDB collection, attempts
+to read data from specified MongoDB collection. Once read, the raw data is
+cleaned and prepared. If an error occurs in either of these 2 steps, data is
+read from an .rda file in the data folder - this contains the last successfully
+read data from MongoDB.
 }
 \examples{
 \dontrun{
 r <- reactiveValues()
 
-load_data(r, "data")
+load_data(r)
 }
 }

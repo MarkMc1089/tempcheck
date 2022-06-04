@@ -1,16 +1,12 @@
-#' Retrieve data from MongoDB
+#' Retrieve data from a MongoDB collection
 #'
-#' @description  Retrieve all data from a mongodb collection. Optionally,
-#'   replace the collection data first.
+#' @description  Retrieve all data from a MongoDB collection, as a dataframe.
 #'
 #' @param collection Name of the collection.
 #' @param db Name of the database the collection is in.
-#' @param connection_string Address of the mongodb server in mongo connection
+#' @param connection_string Address of the MongoDB server in mongo connection
 #'   string [URI
 #'   format](https://docs.mongodb.com/manual/reference/connection-string/).
-#' @param replace_with Default is NULL. If passed, must be a dataframe, named
-#'   list (for single record) or character vector with json strings (one string
-#'   for each row).
 #'
 #' @return Returns all data in the given collection as a dataframe.
 #'
@@ -18,81 +14,175 @@
 #' \dontrun{
 #' # Get the data in my_collection (in the my_db database)
 #' get_mongo_collection(
-#'   "my_collection", "my_db",
-#'   connection_string = glue::glue(
-#'     "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
-#'     "/?tls=true&retryWrites=true&w=majority"
-#'   )
-#' )
-#'
-#' # Replace the data in my_collection (in the my_db database) with the data in
-#' # my_dataframe, then get that data
-#' get_mongo_collection(
-#'   "my_collection", "my_db",
 #'   connection_string = glue::glue(
 #'     "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
 #'     "/?tls=true&retryWrites=true&w=majority"
 #'   ),
-#'   replace_with = my_dataframe
+#'   "my_db",
+#'   "my_collection"
 #' )
 #' }
-get_mongo_collection <- function(collection, db,
-                                 connection_string,
-                                 replace_with = NULL) {
-  conn <- mongolite::mongo(
-    collection = collection,
-    db = db,
+get_mongo_collection <- function(connection_string, db, collection) {
+  conn <- mongo(
     url = connection_string,
-    options = mongolite::ssl_options(weak_cert_validation = TRUE)
+    db = db,
+    collection = collection,
+    options = ssl_options(weak_cert_validation = TRUE)
   )
   on.exit(rm(conn) & gc())
-
-  if (!is.null(replace_with)) {
-    if (conn$count() > 0) conn$drop()
-    conn$insert(replace_with)
-  }
 
   conn$find()
 }
 
 
-#' Load data from mongoDB
+#' Append to or replace data in a MongoDB collection
 #'
-#' @description Attempts to read data from specified mongoDB collection. Once
-#' read, the raw data is cleaned and prepared. If an error occurs in either of
-#' these 2 steps, data is read from an .rda file in the data folder - this
-#' contains the last successfully read data from the mongoDB collection.
+#' @description  Append data to a MongoDB collection, optionally overwriting it.
+#'   If the collection and/or database do not exist, they will be created.
 #'
-#' @param data Either "data" or "targets"
+#' @param connection_string Address of the MongoDB server in mongo connection
+#'   string [URI
+#'   format](https://docs.mongodb.com/manual/reference/connection-string/).
+#' @param db Name of the database the collection is in.
+#' @param collection Name of the collection.
+#' @param replace Default is FALSE. When TRUE, all documents are dropped in the
+#'   collection first, effectively overwriting it.
+#'
+#' @return Returns all data in the given collection (after update) as a dataframe.
+#'
+#' @examples
+#' \dontrun{
+#' # Append rows of my_df to my_collection (in the my_db database).
+#' # Set `replace = FALSE` to instead overwrite it.
+#' send_to_mongo(
+#'   my_df,
+#'   connection_string = glue::glue(
+#'     "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
+#'     "/?tls=true&retryWrites=true&w=majority"
+#'   ),
+#'   "my_db",
+#'   "my_collection",
+#'   replace = FALSE
+#' )
+#' }
+send_to_mongo <- function(data, connection_string, db, collection, replace = FALSE) {
+  conn <- mongo(
+    url = connection_string,
+    db = db,
+    collection = collection,
+    options = ssl_options(weak_cert_validation = TRUE)
+  )
+  on.exit(rm(conn) & gc())
+
+  if (replace && conn$count() > 0) conn$drop()
+
+  conn$insert(data)
+
+  conn$find()
+}
+
+
+#' Append to or replace data in a MongoDB collection
+#'
+#' @description  Append data to a MongoDB collection, optionally overwriting it.
+#'   If the collection and/or database do not exist, they will be created.
+#'
+#' @param snap_url URL of SNAP server
+#' @param headers A named character vector of header keys and values. This allows
+#'   for the `X-USERNAME` and `X-API-KEY` headers to be set for SNAP  authentication.
+#' @param query A named list of query params and values. This allows the
+#'   `restrictedValues` param to be set.
+#' @param connection_string Address of the MongoDB server in mongo connection
+#'   string [URI
+#'   format](https://docs.mongodb.com/manual/reference/connection-string/).
+#' @param db Name of the database the collection is in.
+#' @param collection Name of the collection.
+#' @param replace Default is FALSE. When TRUE, all documents are dropped in the
+#'   collection first, effectively overwriting it.
+#'
+#' @return Returns all data in the given collection (after update) as a dataframe.
+#'
+#' @examples
+#' \dontrun{
+#' # Append the data taken from SNAP survey with ID 123-456 to my_collection
+#' # (in the my_db database). Set `replace = FALSE` to instead overwrite it.
+#' send_to_mongo(
+#'   glue(SNAP_URL, SURVEY_ID = "123-456"),
+#'   c(
+#'     'X-USERNAME' = SNAP_USER,
+#'     'X-API-KEY'  = SNAP_API_KEY
+#'   ),
+#'   mongo_url = glue(
+#'     "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
+#'     "/?tls=true&retryWrites=true&w=majority"
+#'   ),
+#'   "my_db",
+#'   "my_collection",
+#'   replace = FALSE
+#' )
+#' }
+snap_to_mongo <- function(snap_url, headers = character(0), query = character(0),
+                          mongo_url, db, collection, replace = TRUE) {
+  res <- GET(snap_url, add_headers(.headers = headers), query = query)
+  responses <- content(res, as="parsed")$responses
+
+  variables <- lapply(responses, FUN = function(x) x$variables)
+
+  # TODO: abstract this out so user can specify a mapping from SNAP names
+  data <- lapply(variables, function(x){
+    data.frame(
+      date   = x[[1]]$value,
+      team   = x[[2]]$value,
+      rating = x[[3]]$value,
+      reason = x[[4]]$value
+    )
+  })
+
+  # TODO: abstract this out so user can specify mappings from SNAP values
+  team_map <- list(
+    "1" = "Digital",
+    "2" = "Data & Insight"
+  )
+
+  bind_rows(data) %>%
+    mutate(team = as.character(team_map[team])) %>%
+    send_to_mongo(mongo_url, db, collection, replace)
+}
+
+
+#' Load data from MongoDB
+#'
+#' @description After triggering the update of the MongoDB collection, attempts
+#' to read data from specified MongoDB collection. Once read, the raw data is
+#' cleaned and prepared. If an error occurs in either of these 2 steps, data is
+#' read from an .rda file in the data folder - this contains the last successfully
+#' read data from MongoDB.
+#'
 #' @param r A reactiveValues object
+#' @inheritParams snap_to_mongo
 #'
-#' @return Nothing - a new child of r is created to hold the data.
+#' @return Nothing - the data is stored in r$data.
 #'
 #' @examples
 #' \dontrun{
 #' r <- reactiveValues()
 #'
-#' load_data(r, "data")
+#' load_data(r)
 #' }
-load_data <- function(r, data) {
+load_data <- function(r,
+                      snap_url, headers, query,
+                      mongo_url, db, collection, replace = TRUE) {
+  snap_to_mongo(snap_url, headers, query, mongo_url, db, collection, replace)
   tryCatch(
-    r[["data"]] <- data_prep(
-      get_mongo_collection(
-        "tempcheck_data", "tempcheck",
-        connection_string = glue(
-          "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
-          "/?tls=true&retryWrites=true&w=majority"
-        )
-      )
-    ),
+    r$data <- data_prep(get_mongo_collection(mongo_url, db, collection)),
     error = function(e) {
       print(
         glue(
-          "Error reading or preparing {data} from mongoDB: {e}",
+          "Error reading or preparing data from mongoDB: {e}\n",
           "Using last read data"
         )
       )
-      r[["data"]] <- tempcheck::data
+      r$data <- tempcheck::data
     }
   )
 }
@@ -203,3 +293,4 @@ nps_moe_test <- function(p_0, n_0, d_0,
 
   0
 }
+

@@ -8,10 +8,9 @@
 #'
 #' @noRd
 #'
-data_prep <- function(raw_data) {
+data_prep <- function(raw_data, save = TRUE) {
   data <- raw_data %>%
-    slice(-1) %>%
-    select(
+    transmute(
       .data$date,
       .data$reason,
       .data$team,
@@ -20,5 +19,6 @@ data_prep <- function(raw_data) {
     mutate(date = lubridate::dmy(.data$date))
 
   save(data, file = "data/data.rda")
+
   data
 }

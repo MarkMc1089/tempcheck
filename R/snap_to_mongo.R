@@ -9,7 +9,10 @@ headers = c(
   'X-USERNAME' = username,
   'X-API-KEY' = apikey
 )
-result <- content(httr::GET(url = apiurl, httr::add_headers(.headers=headers)),as="parsed")
+result <- content(
+  httr::GET(url = apiurl, httr::add_headers(.headers=headers)),
+  as="parsed"
+)
 
 responses <- result$responses
 variables <- lapply(responses, FUN = function(x) x$variables)
@@ -28,6 +31,5 @@ team_map <- list(
   "2" = "Data & Insight"
 )
 
-bind_rows(lst_df) %>%
-  mutate(team = as.character(team_map[team])) %>%
-  toJSON()
+testdata <- bind_rows(lst_df) %>%
+  mutate(team = as.character(team_map[team]))

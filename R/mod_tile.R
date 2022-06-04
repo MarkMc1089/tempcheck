@@ -20,7 +20,7 @@ mod_tile_ui <- function(id){
 #' @noRd
 #'
 #' @importFrom TileMaker solo_box
-mod_tile_server <- function(id, rating, r){
+mod_tile_server <- function(id, rating_key, r){
   moduleServer( id, function(input, output, session){
     weather_to_rating = list(
       sun = 1,
@@ -31,7 +31,7 @@ mod_tile_server <- function(id, rating, r){
     )
 
     output$tile <- renderUI({
-      count <- nrow(r$data %>% filter(ratingmerge == weather_to_rating[rating]))
+      count <- nrow(r$data %>% filter(.data$rating == weather_to_rating[rating_key]))
       solo_box(count, style = 'width:100%;')
     })
 
