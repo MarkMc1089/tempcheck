@@ -5,14 +5,17 @@
 #' @docType package
 #' @name tempcheck
 #'
-#' @importFrom dplyr arrange case_when desc filter group_by left_join mutate
-#' @importFrom dplyr n rename rowwise select slice summarise ungroup
+#' @importFrom dplyr arrange between bind_rows case_when cur_column desc filter
+#' @importFrom dplyr group_by left_join mutate n rename rename_with rowwise select
+#' @importFrom dplyr slice summarise ungroup
+#' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom glue glue
 #' @importFrom highcharter hc_add_series hc_annotations hc_exporting hc_legend
 #' @importFrom highcharter hc_plotOptions hc_tooltip hc_xAxis hc_yAxis hcaes
 #' @importFrom highcharter highchart highchartOutput renderHighchart
-#' @importFrom httr GET add_headers
-#' @importFrom mongolite mongo ssl_options
+#' @importFrom httr GET add_headers content
+#' @importFrom lubridate dmy
+#' @importFrom purrr map
 #' @importFrom rlang .data := sym
 #' @importFrom shiny NS br column div fluidPage fluidRow h1 h2 HTML img
 #' @importFrom shiny moduleServer reactive renderUI selectInput

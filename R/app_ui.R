@@ -4,86 +4,45 @@
 #' @noRd
 app_ui <- function(request) {
   fluidPage(
+    style = "margin-left: 10px; margin-right: 10px;",
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
     mod_fixed_header_ui("header_1"),
     fluidPage(
+      # fluidRow(
+      #   style="text-align: -webkit-center;",
+      #   col_1(),
+      #   col_2(tile()),
+      #   col_2(tile()),
+      #   col_2(tile()),
+      #   col_2(tile()),
+      #   col_2(tile()),
+      #   col_1()
+      # ),
       br(),
+      # fluidRow(
+      #   style="text-align: -webkit-center;",
+      #   col_1(),
+      #   col_2(mod_rating_image_ui("image_sun")),
+      #   col_2(mod_rating_image_ui("image_sun_cloud")),
+      #   col_2(mod_rating_image_ui("image_cloud")),
+      #   col_2(mod_rating_image_ui("image_cloud_rain")),
+      #   col_2(mod_rating_image_ui("image_cloud_storm")),
+      #   col_1()
+      # ),
       fluidRow(
         style="text-align: -webkit-center;",
         col_1(),
-        col_2(mod_rating_image_ui("image_sun")),
-        col_2(mod_rating_image_ui("image_sun_cloud")),
-        col_2(mod_rating_image_ui("image_cloud")),
-        col_2(mod_rating_image_ui("image_cloud_rain")),
-        col_2(mod_rating_image_ui("image_cloud_storm")),
+        col_2(mod_tile_ui("count_sun")),
+        col_2(mod_tile_ui("count_sun_cloud")),
+        col_2(mod_tile_ui("count_cloud")),
+        col_2(mod_tile_ui("count_cloud_rain")),
+        col_2(mod_tile_ui("count_cloud_storm")),
         col_1()
       ),
-      fluidRow(
-        style="text-align: -webkit-center;",
-        col_1(),
-        col_2(mod_tile_ui("countup_sun")),
-        col_2(mod_tile_ui("countup_sun_cloud")),
-        col_2(mod_tile_ui("countup_cloud")),
-        col_2(mod_tile_ui("countup_cloud_rain")),
-        col_2(mod_tile_ui("countup_cloud_storm")),
-        col_1()
-      ),
-      mod_table_ui("table_1"),
-      #   content_box(
-      #     glue(
-      #       "Overall satisfaction with all aspects of the ",
-      #       "Financial Information Collection (FIC) Service"
-      #     ),
-      #     mod_3_month_nps_groups_ui("nps_groups_3_month"),
-      #     br(),
-      #     fluidRow(
-      #       col_9(
-      #         mod_prom_det_tile_row_ui("current-0"),
-      #         br(),
-      #         mod_prom_det_tile_row_ui("current-1"),
-      #         br(),
-      #         mod_prom_det_tile_row_ui("current-2")
-      #       ),
-      #       col_3(
-      #         h2(tags$b("Targets")),
-      #         tags$b("Q1 = +75 | Q2 = +75 | Q3 = +75 | Q4 = +75"),
-      #         mod_3_month_tile_ui("nps_3_month_tile")
-      #       )
-      #     )
-      #   ),
-      #   br(),
-      #   content_box(
-      #     "NPS over time",
-      #     mod_monthly_chart_ui("nps_monthly")
-      #   ),
-      #   br(),
-      #   content_box(
-      #     "Reason for overall satisfaction ratings",
-      #     mod_table_group_select_ui("overall_why")
-      #   ),
-      #   br(),
-      #   content_box(
-      #     "NetEasy Score",
-      #     fluidRow(
-      #       col_9(
-      #         mod_monthly_chart_ui("nes_monthly")
-      #       ),
-      #       col_3(
-      #         fluidRow(
-      #           h2(tags$b("Targets")),
-      #           tags$b("Q1 = +85 | Q2 = +85 | Q3 = +85 | Q4 = +85"),
-      #           mod_3_month_tile_ui("nes_3_month_tile")
-      #         )
-      #       )
-      #     )
-      #   ),
-      #   br(),
-      #   content_box(
-      #     "Suggestions for improvements",
-      #     mod_table_group_select_ui("suggestions")
-      #   )
+      br(),
+      mod_table_ui("table_1")
     ),
     br(),
     mod_footer_ui("footer_1")
@@ -100,6 +59,8 @@ app_ui <- function(request) {
 #' @noRd
 golem_add_external_resources <- function() {
   add_resource_path("www", app_sys("app/www"))
+  add_resource_path("images", app_sys("app/www/images"))
+  add_resource_path("animated_svgs", app_sys("app/www/images/weather_icons/animated"))
 
   tags$head(
     lang = "en",

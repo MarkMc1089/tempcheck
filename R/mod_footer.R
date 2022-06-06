@@ -32,6 +32,11 @@ mod_footer_ui <- function(id) {
               "Accessibility-statement-for-Management-Information-RShiny-Dashboards.aspx"
             ),
             "Click here if you wish to view our accessibility statement."
+          ),
+          br(),
+          enurl(
+            "https://www.amcharts.com/free-animated-svg-weather-icons/",
+            "Weather icons by amCharts, used under CC License v4"
           )
         )
       )

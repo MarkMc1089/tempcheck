@@ -1,16 +1,13 @@
 #' Tempcheck Data
 #'
-#' @format A data frame with ? variables:
+#' @format A data frame with 4 variables:
 #'
 #' \describe{
-  # \item{ID.date}{First day of each month}
-  # \item{NetEasy}{NetEasy rating}
-  # \item{Q1}{NPS rating}
-  # \item{Overall_why}{Free text comment; why NPS rating was given}
-  # \item{Q3}{Time taken to complete, compared to previous methods}
-  # \item{Q4}{Free text comment; suggestions for improvement of system}
+  # \item{date}{Date of response, in lubridate::dmy format}
+  # \item{team}{Team of respondent}
+  # \item{rating}{Mood rating given, on scale 1-5 with 1 being best}
+  # \item{reason}{Free text comment; reason for rating given}
 #' }
 #'
-#' @source {Customer Insight Team at NHS BSA, via collection tempcheck_data in
-#' tempcheck mongoDB database}
+#' @source {Customer Insight Team at NHS BSA, via SNAP survey with ID 55db4a62-7a8d-4df8-b8aa-0bf2c02a48a}
 "data"

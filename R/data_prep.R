@@ -8,15 +8,12 @@
 #'
 #' @noRd
 #'
-data_prep <- function(raw_data, save = TRUE) {
+data_prep <- function(raw_data, maps, transforms) {
   data <- raw_data %>%
-    transmute(
-      .data$date,
-      .data$reason,
-      .data$team,
-      .data$rating
-    ) %>%
-    mutate(date = lubridate::dmy(.data$date))
+    mutate(
+      across(names(maps), ~ maps[[cur_column()]][.x]),
+      across(names(transforms), ~ transforms[[cur_column()]](.x))
+    )
 
   save(data, file = "data/data.rda")
 

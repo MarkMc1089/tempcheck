@@ -10,6 +10,7 @@ Depends:
     R (>= 4.1.0)
 Imports: 
     config (>= 0.3.1),
+    dplyr,
     DT (>= 0.19),
     glue,
     golem (>= 0.3.1),
@@ -18,12 +19,11 @@ Imports:
     lubridate,
     magrittr (>= 2.0.1),
     markdown (>= 1.1),
-    mongolite (>= 2.3.1),
     nhsbsaR (>= 0.0.0.9000),
     pkgload (>= 1.2.3),
+    purrr,
     rlang (>= 0.4.11),
     shiny (>= 1.6.0),
-    dplyr,
     tidyr,
     TileMaker,
     stringr,

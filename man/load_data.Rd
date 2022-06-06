@@ -2,21 +2,12 @@
 % Please edit documentation in R/fct_helpers.R
 \name{load_data}
 \alias{load_data}
-\title{Load data from MongoDB}
+\title{Load data from SNAP, clean it and save in a `reactiveValues` object.}
 \usage{
-load_data(
-  r,
-  snap_url,
-  headers,
-  query,
-  mongo_url,
-  db,
-  collection,
-  replace = TRUE
-)
+load_data(r, snap_url, headers, query, col_names, ...)
 }
 \arguments{
-\item{r}{A reactiveValues object}
+\item{r}{A `reactiveValues` object.}
 
 \item{snap_url}{URL of SNAP server}
 
@@ -26,27 +17,48 @@ for the `X-USERNAME` and `X-API-KEY` headers to be set for SNAP  authentication.
 \item{query}{A named list of query params and values. This allows the
 `restrictedValues` param to be set.}
 
-\item{db}{Name of the database the collection is in.}
+\item{col_names}{A character vector of equal length to the number of variables
+pulled from the survey. Columns of the resulting dataframe will be named from this.}
 
-\item{collection}{Name of the collection.}
-
-\item{replace}{Default is FALSE. When TRUE, all documents are dropped in the
-collection first, effectively overwriting it.}
+\item{...}{Extra arguments passed to `data_prep`. Useful for passing any mappings
+or transformations needed.}
 }
 \value{
-Nothing - the data is stored in r$data.
+Nothing - the data is stored in `r$data`.
 }
 \description{
-After triggering the update of the MongoDB collection, attempts
-to read data from specified MongoDB collection. Once read, the raw data is
-cleaned and prepared. If an error occurs in either of these 2 steps, data is
-read from an .rda file in the data folder - this contains the last successfully
-read data from MongoDB.
+Attempts to read data from SNAP. Once read, the raw data is cleaned.
+If an error occurs in either of these 2 steps, data is read from an .rda file
+in the data folder - this contains the last successfully read data from SNAP.
 }
 \examples{
 \dontrun{
-r <- reactiveValues()
+# create a reactiveValues object to hold data
+r <- rv()
 
-load_data(r)
+# Get data from SNAP survey with ID 123-456, restricted to variables
+# V18, V56, V58 and V49, as a dataframe. The columns will be named like
+# V18 -> date, V56 -> team, V58 -> rating and V49 -> reason. Also, a mapping
+# is provided for the team variable and a transformation specified for the
+# date variable.
+load_data(
+  r,
+  glue(SNAP_URL, SURVEY_ID = "123-456"),
+  c(
+    'X-USERNAME' = SNAP_USER,
+    'X-API-KEY'  = SNAP_API_KEY
+  ),
+  list(restrictedVariables = "V18,V56,V58,V49"),
+  col_names = c("date", "team", "rating", "reason"),
+  maps = list(
+    team = c(
+      "1" = "Digital",
+      "2" = "Data & Insight"
+    )
+  ),
+  transforms <- list(
+    date = dmy
+  )
+)
 }
 }

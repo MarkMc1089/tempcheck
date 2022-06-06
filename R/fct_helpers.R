@@ -1,188 +1,118 @@
-#' Retrieve data from a MongoDB collection
+#' Pull data from a SNAP survey
 #'
-#' @description  Retrieve all data from a MongoDB collection, as a dataframe.
-#'
-#' @param collection Name of the collection.
-#' @param db Name of the database the collection is in.
-#' @param connection_string Address of the MongoDB server in mongo connection
-#'   string [URI
-#'   format](https://docs.mongodb.com/manual/reference/connection-string/).
-#'
-#' @return Returns all data in the given collection as a dataframe.
-#'
-#' @examples
-#' \dontrun{
-#' # Get the data in my_collection (in the my_db database)
-#' get_mongo_collection(
-#'   connection_string = glue::glue(
-#'     "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
-#'     "/?tls=true&retryWrites=true&w=majority"
-#'   ),
-#'   "my_db",
-#'   "my_collection"
-#' )
-#' }
-get_mongo_collection <- function(connection_string, db, collection) {
-  conn <- mongo(
-    url = connection_string,
-    db = db,
-    collection = collection,
-    options = ssl_options(weak_cert_validation = TRUE)
-  )
-  on.exit(rm(conn) & gc())
-
-  conn$find()
-}
-
-
-#' Append to or replace data in a MongoDB collection
-#'
-#' @description  Append data to a MongoDB collection, optionally overwriting it.
-#'   If the collection and/or database do not exist, they will be created.
-#'
-#' @param connection_string Address of the MongoDB server in mongo connection
-#'   string [URI
-#'   format](https://docs.mongodb.com/manual/reference/connection-string/).
-#' @param db Name of the database the collection is in.
-#' @param collection Name of the collection.
-#' @param replace Default is FALSE. When TRUE, all documents are dropped in the
-#'   collection first, effectively overwriting it.
-#'
-#' @return Returns all data in the given collection (after update) as a dataframe.
-#'
-#' @examples
-#' \dontrun{
-#' # Append rows of my_df to my_collection (in the my_db database).
-#' # Set `replace = FALSE` to instead overwrite it.
-#' send_to_mongo(
-#'   my_df,
-#'   connection_string = glue::glue(
-#'     "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
-#'     "/?tls=true&retryWrites=true&w=majority"
-#'   ),
-#'   "my_db",
-#'   "my_collection",
-#'   replace = FALSE
-#' )
-#' }
-send_to_mongo <- function(data, connection_string, db, collection, replace = FALSE) {
-  conn <- mongo(
-    url = connection_string,
-    db = db,
-    collection = collection,
-    options = ssl_options(weak_cert_validation = TRUE)
-  )
-  on.exit(rm(conn) & gc())
-
-  if (replace && conn$count() > 0) conn$drop()
-
-  conn$insert(data)
-
-  conn$find()
-}
-
-
-#' Append to or replace data in a MongoDB collection
-#'
-#' @description  Append data to a MongoDB collection, optionally overwriting it.
-#'   If the collection and/or database do not exist, they will be created.
+#' @description Pull data from a SNAP survey. The data will be returned as
+#'   a dataframe, with column names as specified.
 #'
 #' @param snap_url URL of SNAP server
 #' @param headers A named character vector of header keys and values. This allows
 #'   for the `X-USERNAME` and `X-API-KEY` headers to be set for SNAP  authentication.
 #' @param query A named list of query params and values. This allows the
 #'   `restrictedValues` param to be set.
-#' @param connection_string Address of the MongoDB server in mongo connection
-#'   string [URI
-#'   format](https://docs.mongodb.com/manual/reference/connection-string/).
-#' @param db Name of the database the collection is in.
-#' @param collection Name of the collection.
-#' @param replace Default is FALSE. When TRUE, all documents are dropped in the
-#'   collection first, effectively overwriting it.
+#' @param col_names A character vector of equal length to the number of variables
+#' pulled from the survey. Columns of the resulting dataframe will be named from this.
 #'
-#' @return Returns all data in the given collection (after update) as a dataframe.
+#' @return Returns a dataframe, with column names as specified in `col_names`.
 #'
 #' @examples
 #' \dontrun{
-#' # Append the data taken from SNAP survey with ID 123-456 to my_collection
-#' # (in the my_db database). Set `replace = FALSE` to instead overwrite it.
-#' send_to_mongo(
+#' # Get data from SNAP survey with ID 123-456, restricted to variables
+#' # V18, V56, V58 and V49, as a dataframe. The columns will be named like
+#' # V18 -> date, V56 -> team, V58 -> rating and V49 -> reason
+#' snap_to_df(
 #'   glue(SNAP_URL, SURVEY_ID = "123-456"),
 #'   c(
 #'     'X-USERNAME' = SNAP_USER,
 #'     'X-API-KEY'  = SNAP_API_KEY
 #'   ),
-#'   mongo_url = glue(
-#'     "mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}",
-#'     "/?tls=true&retryWrites=true&w=majority"
-#'   ),
-#'   "my_db",
-#'   "my_collection",
-#'   replace = FALSE
+#'   list(restrictedVariables = "V18,V56,V58,V49"),
+#'   col_names = c("date", "team", "rating", "reason")
 #' )
 #' }
-snap_to_mongo <- function(snap_url, headers = character(0), query = character(0),
-                          mongo_url, db, collection, replace = TRUE) {
-  res <- GET(snap_url, add_headers(.headers = headers), query = query)
-  responses <- content(res, as="parsed")$responses
+snap_to_df <- function(snap_url, headers = character(0), query = character(0),
+                       col_names) {
+  response <- GET(snap_url, add_headers(.headers = headers), query = query)
+  response <- content(response, as = "parsed")
 
-  variables <- lapply(responses, FUN = function(x) x$variables)
-
-  # TODO: abstract this out so user can specify a mapping from SNAP names
-  data <- lapply(variables, function(x){
-    data.frame(
-      date   = x[[1]]$value,
-      team   = x[[2]]$value,
-      rating = x[[3]]$value,
-      reason = x[[4]]$value
-    )
-  })
-
-  # TODO: abstract this out so user can specify mappings from SNAP values
-  team_map <- list(
-    "1" = "Digital",
-    "2" = "Data & Insight"
-  )
-
-  bind_rows(data) %>%
-    mutate(team = as.character(team_map[team])) %>%
-    send_to_mongo(mongo_url, db, collection, replace)
+  map(response$responses, function(x){
+    data.frame(x$variables) %>%
+      select(starts_with("value")) %>%
+      rename_with(~ col_names)
+  }) %>%
+    bind_rows()
 }
 
 
-#' Load data from MongoDB
+#' Load data from SNAP, clean it and save in a `reactiveValues` object.
 #'
-#' @description After triggering the update of the MongoDB collection, attempts
-#' to read data from specified MongoDB collection. Once read, the raw data is
-#' cleaned and prepared. If an error occurs in either of these 2 steps, data is
-#' read from an .rda file in the data folder - this contains the last successfully
-#' read data from MongoDB.
+#' @description Attempts to read data from SNAP. Once read, the raw data is cleaned.
+#' If an error occurs in either of these 2 steps, data is read from an .rda file
+#' in the data folder - this contains the last successfully read data from SNAP.
 #'
-#' @param r A reactiveValues object
-#' @inheritParams snap_to_mongo
+#' @param r A `reactiveValues` object.
+#' @inheritParams snap_to_df
+#' @param ... Extra arguments passed to `data_prep`. Useful for passing any mappings
+#'   or transformations needed.
 #'
-#' @return Nothing - the data is stored in r$data.
+#' @return Nothing - the data is stored in `r$data`.
 #'
 #' @examples
 #' \dontrun{
-#' r <- reactiveValues()
+#' # create a reactiveValues object to hold data
+#' r <- rv()
 #'
-#' load_data(r)
+#' # Get data from SNAP survey with ID 123-456, restricted to variables
+#' # V18, V56, V58 and V49, as a dataframe. The columns will be named like
+#' # V18 -> date, V56 -> team, V58 -> rating and V49 -> reason. Also, a mapping
+#' # is provided for the team variable and a transformation specified for the
+#' # date variable.
+#' load_data(
+#'   r,
+#'   glue(SNAP_URL, SURVEY_ID = "123-456"),
+#'   c(
+#'     'X-USERNAME' = SNAP_USER,
+#'     'X-API-KEY'  = SNAP_API_KEY
+#'   ),
+#'   list(restrictedVariables = "V18,V56,V58,V49"),
+#'   col_names = c("date", "team", "rating", "reason"),
+#'   maps = list(
+#'     team = c(
+#'       "1" = "Digital",
+#'       "2" = "Data & Insight"
+#'     )
+#'   ),
+#'   transforms <- list(
+#'     date = dmy
+#'   )
+#' )
 #' }
-load_data <- function(r,
-                      snap_url, headers, query,
-                      mongo_url, db, collection, replace = TRUE) {
-  snap_to_mongo(snap_url, headers, query, mongo_url, db, collection, replace)
+load_data <- function(r, snap_url, headers, query, col_names, ...) {
   tryCatch(
-    r$data <- data_prep(get_mongo_collection(mongo_url, db, collection)),
+    data <- snap_to_df(snap_url, headers, query, col_names),
     error = function(e) {
       print(
         glue(
-          "Error reading or preparing data from mongoDB: {e}\n",
+          "Error reading data from SNAP: {e}\n",
           "Using last read data"
         )
       )
       r$data <- tempcheck::data
+      r$filtered_data <- tempcheck::data
+      return ()
+    }
+  )
+
+  tryCatch(
+    r$data <- data_prep(data, ...),
+    error = function(e) {
+      print(
+        glue(
+          "Error preparing data: {e}\n",
+          "Using last read data"
+        )
+      )
+      r$data <- tempcheck::data
+      r$filtered_data <- tempcheck::data
+      return ()
     }
   )
 }
@@ -225,72 +155,71 @@ content_box <- function(title, ...) {
   )
 }
 
+tile <- function (value, img_src, bg_colour, ...) {
+                  # value = NULL, txt = NULL, former = NULL, size = "md",
+                  # icon = NULL, color = "info", link = NULL, units = NULL,
+                  # hover = NULL, textModifier = "span", pretty = NULL, ...
 
-#' Calculate whether NPS score has significantly changed between 2 samples.
-#'
-#' @description A margin of error is calculated for each sample, from the number of
-#' promoters, neutrals (i.e. passives) and detractors. The standard error of
-#' their difference is estimated using the Pythagorean formula, and the absolute
-#' difference of the two samples is compared to this multiplied by the critical
-#' value (aka z*-value).
-#'
-#' The return value is in (-1, 0, +1), according to whether a significant decrease
-#' is found, no significant change, or a significant increase, respectively. If
-#' the total for a sample is 0, then 0 is returned.
-#'
-#' Formula is based on the one found in this [blog post]
-#' (https://www.genroe.com/blog/how-to-calculate-margin-of-error-and-other-stats-
-#' for-nps/5994).
-#'
-#' @param p_0 Number of Promoters in latest sample
-#' @param n_0 Number of Neutrals in latest sample
-#' @param d_0 Number of Detractors in latest sample
-#' @param p_1 Number of Promoters in oldest sample
-#' @param n_1 Number of Neutrals in oldest sample
-#' @param d_1 Number of Detractors in oldest sample
-#' @param z_val Critical value multiplier; 1.96 by default for a 95% confidence
-#' interval. See [this table]
-#' (http://www.ltcconline.net/greenl/courses/201/estimation/smallConfLevelTable.htm)
-#' for further values of z_val for common confidence intervals.
-#'
-#' @return A value in (-1, 0, +1); see notes above.
-#'
-#' @examples
-#' # Test with a 99% confidence interval
-#' \dontrun{
-#' nps_moe_test(123, 456, 789, 321, 654, 987, z_val = 2.58)
-#' }
-nps_moe_test <- function(p_0, n_0, d_0,
-                         p_1, n_1, d_1,
-                         z_val = 1.96) {
-  if (NA %in% c(p_0, n_0, d_0, p_1, n_1, d_1)) {
-    return(0)
-  }
+  div(
+    style = glue("background-color: {bg_colour}"),
+    span(
+      style = "width:100%; color: black; font-size: xxx-large; font-weight: bold;",
+      img(src = img_src),
+      value
+    )
+  )
 
-  t_0 <- p_0 + n_0 + d_0
-  if (t_0 == 0) {
-    return(0)
-  }
-  nps_0 <- (p_0 - d_0) / t_0
-  t_1 <- p_1 + n_1 + d_1
-  if (t_1 == 0) {
-    return(0)
-  }
-  nps_1 <- (p_1 - d_1) / t_1
 
-  var_0 <- ((1 - nps_0)^2 * p_0 + nps_0^2 * n_0 + (-1 - nps_0)^2 * d_0) / t_0
-  var_1 <- ((1 - nps_1)^2 * p_1 + nps_1^2 * n_1 + (-1 - nps_1)^2 * d_1) / t_1
-
-  se_0 <- sqrt(var_0 / t_0)
-  se_1 <- sqrt(var_1 / t_1)
-
-  if (abs(nps_0 - nps_1) > z_val * sqrt(se_0^2 + se_1^2)) {
-    if (nps_0 > nps_1) {
-      return(1)
-    }
-    return(-1)
-  }
-
-  0
+  # tags$a(
+  #   href = link,
+  #   tags$button(
+  #     title = hover,
+  #     color = color,
+  #     role = "button",
+  #     class = "btn",
+  #     class = paste0("btn-", size),
+  #     class = paste0("btn-", color),
+  #     if (!(is.null(value) & is.null(units) & is.null(icon))) {
+  #       tag(
+  #         textModifier,
+  #         tags$span(
+  #           ico(icon),
+  #           prettify(value, pretty),
+  #           units,
+  #           if (!is.null(former)) {
+  #             if (former > value) {
+  #               tags$sup(
+  #                 style = "font-size: 12px;color:#EEEEEE;vertical-align: top;",
+  #                 ico("chevron-down", chevron = TRUE),
+  #                 paste(
+  #                   round(
+  #                     (as.numeric(former) - as.numeric(value))/as.numeric(former) * 100,
+  #                     1
+  #                   ),
+  #                   "%",
+  #                   sep = ""
+  #                 )
+  #               )
+  #             } else {
+  #               tags$sup(
+  #                 style = "font-size: 12px;color:#EEEEEE;vertical-align: top;",
+  #                 ico("chevron-up", chevron = TRUE),
+  #                 paste(
+  #                   round(
+  #                     (as.numeric(value) - as.numeric(former))/as.numeric(former) * 100,
+  #                     1
+  #                   ),
+  #                   "%",
+  #                   sep = ""
+  #                 )
+  #               )
+  #             }
+  #           }
+  #         )$children
+  #       )
+  #     },
+  #     HTML(txt),
+  #     ...
+  #   )
+  # )
 }
-

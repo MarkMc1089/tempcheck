@@ -5,14 +5,13 @@
 \alias{data}
 \title{Tempcheck Data}
 \format{
-A data frame with ? variables:
+A data frame with 4 variables:
 
 \describe{
 }
 }
 \source{
-{Customer Insight Team at NHS BSA, via collection tempcheck_data in
-tempcheck mongoDB database}
+{Customer Insight Team at NHS BSA, via SNAP survey with ID 55db4a62-7a8d-4df8-b8aa-0bf2c02a48a}
 }
 \usage{
 data
