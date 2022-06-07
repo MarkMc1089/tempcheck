@@ -22,7 +22,8 @@ app_server <- function(input, output, session) {
       )
     ),
     transforms <- list(
-      date = dmy
+      date = dmy,
+      rating = as.integer
     )
   )
 
@@ -30,15 +31,15 @@ app_server <- function(input, output, session) {
 
   mod_global_date_filter_server(r, "global", "team")
   mod_global_filter_server(r, "global", "team")
-  mod_rating_image_server("image_sun", "sun")
-  mod_rating_image_server("image_sun_cloud", "sun_cloud")
-  mod_rating_image_server("image_cloud", "cloud")
-  mod_rating_image_server("image_cloud_rain", "cloud_rain")
-  mod_rating_image_server("image_cloud_storm", "cloud_storm")
   mod_tile_server(r, "count_sun", "sun")
   mod_tile_server(r, "count_sun_cloud", "sun_cloud")
   mod_tile_server(r, "count_cloud", "cloud")
   mod_tile_server(r, "count_cloud_rain", "cloud_rain")
   mod_tile_server(r, "count_cloud_storm", "cloud_storm")
+  mod_tile_server(r, "avg_mon", day = "mon")
+  mod_tile_server(r, "avg_tue", day = "tue")
+  mod_tile_server(r, "avg_wed", day = "wed")
+  mod_tile_server(r, "avg_thu", day = "thu")
+  mod_tile_server(r, "avg_fri", day = "fri")
   mod_table_server(r, "table_1")
 }

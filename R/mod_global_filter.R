@@ -12,6 +12,7 @@ mod_global_filter_ui <- function(id, ...){
 
   selectInput(
     ns(glue("{id}_select")),
+    selectize = FALSE,
     ...
   )
 }

@@ -155,16 +155,16 @@ content_box <- function(title, ...) {
   )
 }
 
-tile <- function (value, img_src, bg_colour, ...) {
+tile <- function (value, img_src, alt_text, bg_colour = "#005ebf", height = "64px") {
                   # value = NULL, txt = NULL, former = NULL, size = "md",
                   # icon = NULL, color = "info", link = NULL, units = NULL,
                   # hover = NULL, textModifier = "span", pretty = NULL, ...
 
   div(
-    style = glue("background-color: {bg_colour}"),
+    style = glue("background-color: {bg_colour}; height: {height};"),
     span(
       style = "width:100%; color: black; font-size: xxx-large; font-weight: bold;",
-      img(src = img_src),
+      img(src = img_src, alt = alt_text),
       value
     )
   )

@@ -9,42 +9,35 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     mod_fixed_header_ui("header_1"),
-    fluidPage(
-      # fluidRow(
-      #   style="text-align: -webkit-center;",
-      #   col_1(),
-      #   col_2(tile()),
-      #   col_2(tile()),
-      #   col_2(tile()),
-      #   col_2(tile()),
-      #   col_2(tile()),
-      #   col_1()
-      # ),
-      br(),
-      # fluidRow(
-      #   style="text-align: -webkit-center;",
-      #   col_1(),
-      #   col_2(mod_rating_image_ui("image_sun")),
-      #   col_2(mod_rating_image_ui("image_sun_cloud")),
-      #   col_2(mod_rating_image_ui("image_cloud")),
-      #   col_2(mod_rating_image_ui("image_cloud_rain")),
-      #   col_2(mod_rating_image_ui("image_cloud_storm")),
-      #   col_1()
-      # ),
-      fluidRow(
-        style="text-align: -webkit-center;",
-        col_1(),
-        col_2(mod_tile_ui("count_sun")),
-        col_2(mod_tile_ui("count_sun_cloud")),
-        col_2(mod_tile_ui("count_cloud")),
-        col_2(mod_tile_ui("count_cloud_rain")),
-        col_2(mod_tile_ui("count_cloud_storm")),
-        col_1()
-      ),
-      br(),
-      mod_table_ui("table_1")
+    br(),br(),
+    tags$main(
+      fluidPage(
+        fluidRow(
+          style="text-align: -webkit-center;",
+          col_1(),
+          col_2(mod_tile_ui("count_sun")),
+          col_2(mod_tile_ui("count_sun_cloud")),
+          col_2(mod_tile_ui("count_cloud")),
+          col_2(mod_tile_ui("count_cloud_rain")),
+          col_2(mod_tile_ui("count_cloud_storm")),
+          col_1()
+        ),
+        br(),
+        fluidRow(
+          style="text-align: -webkit-center;",
+          col_1(),
+          col_2(mod_tile_ui("avg_mon")),
+          col_2(mod_tile_ui("avg_tue")),
+          col_2(mod_tile_ui("avg_wed")),
+          col_2(mod_tile_ui("avg_thu")),
+          col_2(mod_tile_ui("avg_fri")),
+          col_1()
+        ),
+        br(),
+        mod_table_ui("table_1")
+      )
     ),
-    br(),
+    br(),br(),
     mod_footer_ui("footer_1")
   )
 }
@@ -63,7 +56,7 @@ golem_add_external_resources <- function() {
   add_resource_path("animated_svgs", app_sys("app/www/images/weather_icons/animated"))
 
   tags$head(
-    lang = "en",
+    tags$html(lang = "en"),
     favicon(),
     bundle_resources(
       path = app_sys("app/www"),
