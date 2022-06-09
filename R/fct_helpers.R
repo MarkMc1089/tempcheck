@@ -156,70 +156,19 @@ content_box <- function(title, ...) {
 }
 
 tile <- function (value, img_src, alt_text, bg_colour = "#005ebf", height = "64px") {
-                  # value = NULL, txt = NULL, former = NULL, size = "md",
-                  # icon = NULL, color = "info", link = NULL, units = NULL,
-                  # hover = NULL, textModifier = "span", pretty = NULL, ...
-
   div(
-    style = glue("background-color: {bg_colour}; height: {height};"),
-    span(
-      style = "width:100%; color: black; font-size: xxx-large; font-weight: bold;",
-      img(src = img_src, alt = alt_text),
-      value
+    style = glue("background-color: {bg_colour}; height: {height}; border-radius: 4px"),
+    div(
+      style = "color: black; font-weight: bold;",
+      div(img(src = img_src, alt = alt_text)),
+      div(
+        class = "tile",
+        style = glue(
+          "height: {height}; display: flex; flex-direction: column;
+          justify-content: center;"
+        ),
+        value
+      )
     )
   )
-
-
-  # tags$a(
-  #   href = link,
-  #   tags$button(
-  #     title = hover,
-  #     color = color,
-  #     role = "button",
-  #     class = "btn",
-  #     class = paste0("btn-", size),
-  #     class = paste0("btn-", color),
-  #     if (!(is.null(value) & is.null(units) & is.null(icon))) {
-  #       tag(
-  #         textModifier,
-  #         tags$span(
-  #           ico(icon),
-  #           prettify(value, pretty),
-  #           units,
-  #           if (!is.null(former)) {
-  #             if (former > value) {
-  #               tags$sup(
-  #                 style = "font-size: 12px;color:#EEEEEE;vertical-align: top;",
-  #                 ico("chevron-down", chevron = TRUE),
-  #                 paste(
-  #                   round(
-  #                     (as.numeric(former) - as.numeric(value))/as.numeric(former) * 100,
-  #                     1
-  #                   ),
-  #                   "%",
-  #                   sep = ""
-  #                 )
-  #               )
-  #             } else {
-  #               tags$sup(
-  #                 style = "font-size: 12px;color:#EEEEEE;vertical-align: top;",
-  #                 ico("chevron-up", chevron = TRUE),
-  #                 paste(
-  #                   round(
-  #                     (as.numeric(value) - as.numeric(former))/as.numeric(former) * 100,
-  #                     1
-  #                   ),
-  #                   "%",
-  #                   sep = ""
-  #                 )
-  #               )
-  #             }
-  #           }
-  #         )$children
-  #       )
-  #     },
-  #     HTML(txt),
-  #     ...
-  #   )
-  # )
 }

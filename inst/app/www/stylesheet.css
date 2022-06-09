@@ -126,10 +126,52 @@ border: 1px solid black;
 }
 
 img{
-    float: right; !important;
+    float: right !important;
 }
 
 a {
     color: #005EB8!important;
     text-decoration: none;
 }
+
+@media only screen and (min-width: 1381px) {
+  .tile {
+    font-size: xxx-large;
+  }
+}
+
+@media only screen and (max-width: 1380px) {
+  .tile {
+    font-size: xx-large;
+  }
+}
+
+@media only screen and (max-width: 1110px) {
+  .tile {
+    font-size: x-large;
+  }
+}
+
+@media only screen and (max-width: 960px) {
+  .tile {
+    font-size: large;
+  }
+}
+
+@media only screen and (max-width: 868px) {
+  .tile {
+    font-size: medium;
+  }
+}
+
+@media only screen and (max-width: 830px) {
+  .tile {
+    font-size: small;
+  }
+
+@media only screen and (max-width: 767px) {
+  .tile {
+    font-size: xxx-large;
+  }
+}
+

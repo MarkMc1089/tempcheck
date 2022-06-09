@@ -22,35 +22,36 @@ mod_fixed_header_ui <- function(id) {
               span("Internal mood survey results", style = "font-size: 10pt")
             ),
           ),
-          col_3(
-            mod_global_filter_ui(
-              "global",
-              label = "Team:",
-              choices = c("All", "Data & Insight", "Digital")
+          col_7(
+            fluidRow(
+              col_4(
+                mod_global_filter_ui(
+                  "global",
+                  label = "Team:",
+                  choices = c("All", "Data & Insight", "Digital")
+                )
+              ),
+              col_8(
+                mod_global_date_filter_ui(
+                  "global",
+                  label = "Date range:",
+                  format = "dd-mm-yyyy",
+                  start  = min(unique(data$date)),
+                  end    = max(unique(data$date)),
+                  min    = min(unique(data$date)),
+                  max    = max(unique(data$date)),
+                  separator = " - ",
+                  width = "100%"
+                )
+              )
             )
           ),
-          col_3(
-            mod_global_date_filter_ui(
-              "global",
-              label = "Date range:",
-              format = "dd-mm-yyyy",
-              start  = min(unique(data$date)),
-              end    = max(unique(data$date)),
-              min    = min(unique(data$date)),
-              max    = max(unique(data$date)),
-              separator = " - ",
-              width = "100%"
-            )
-          ),
-          col_3(
+          col_2(
             div(
-              class = "float-right",
               img(
                 src = "www/bsa_logo.svg",
-                height = "60px",
                 name = "NHSBSA logo",
-                alt = "NHS Business Services Authority logo",
-                padding = "10px"
+                alt = "NHS Business Services Authority logo"
               ),
               br()
             )

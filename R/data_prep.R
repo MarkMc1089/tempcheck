@@ -11,7 +11,7 @@
 data_prep <- function(raw_data, maps, transforms) {
   data <- raw_data %>%
     mutate(
-      across(names(maps), ~ maps[[cur_column()]][.x]),
+      across(names(maps),       ~ maps[[cur_column()]][.x]),
       across(names(transforms), ~ transforms[[cur_column()]](.x))
     )
 

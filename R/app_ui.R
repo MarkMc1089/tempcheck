@@ -23,17 +23,17 @@ app_ui <- function(request) {
           col_1()
         ),
         br(),
-        fluidRow(
-          style="text-align: -webkit-center;",
-          col_1(),
-          col_2(mod_tile_ui("avg_mon")),
-          col_2(mod_tile_ui("avg_tue")),
-          col_2(mod_tile_ui("avg_wed")),
-          col_2(mod_tile_ui("avg_thu")),
-          col_2(mod_tile_ui("avg_fri")),
-          col_1()
-        ),
-        br(),
+        # fluidRow(
+        #   style="text-align: -webkit-center;",
+        #   col_1(),
+        #   col_2(mod_tile_ui("avg_mon")),
+        #   col_2(mod_tile_ui("avg_tue")),
+        #   col_2(mod_tile_ui("avg_wed")),
+        #   col_2(mod_tile_ui("avg_thu")),
+        #   col_2(mod_tile_ui("avg_fri")),
+        #   col_1()
+        # ),
+        # br(),
         mod_table_ui("table_1")
       )
     ),
@@ -57,7 +57,11 @@ golem_add_external_resources <- function() {
 
   tags$head(
     tags$html(lang = "en"),
-    favicon(),
+    # Seems to be a bug in {golem} - placing tags within a tags$head should place
+    # them in the head tag. But it does not. Seems OK with nesting another tags$head!
+    tags$head(
+      tags$link(rel = "icon", href = "animated_svgs/day.svg", type = "image/svg+xml")
+    ),
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "Tempcheck"

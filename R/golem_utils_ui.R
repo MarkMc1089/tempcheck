@@ -295,6 +295,12 @@ col_8 <- function(...) {
 
 #' @noRd
 #'
+col_7 <- function(...) {
+  column(7, ...)
+}
+
+#' @noRd
+#'
 col_6 <- function(...) {
   column(6, ...)
 }

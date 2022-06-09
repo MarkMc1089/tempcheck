@@ -17,7 +17,8 @@ mod_tile_ui <- function(id){
 #' @noRd
 mod_tile_server <- function(r, id, rating_key = NULL, day = NULL){
   moduleServer(id, function(input, output, session){
-    weather_to_rating = list(
+
+    weather_to_rating <- list(
       sun         = 1,
       sun_cloud   = 2,
       cloud       = 3,
@@ -35,7 +36,7 @@ mod_tile_server <- function(r, id, rating_key = NULL, day = NULL){
       cloud_storm = "thunder"
     )
 
-    weather_to_alt_text = list(
+    weather_to_alt_text <- list(
       sun = "Sun icon",
       sun_cloud = "Sun and clouds icon",
       cloud = "Clouds icon",
@@ -45,13 +46,20 @@ mod_tile_server <- function(r, id, rating_key = NULL, day = NULL){
 
     output$tile <- renderUI({
       if (!is.null(rating_key)) {
-        count <- nrow(
-          r$filtered_data %>%
-            filter(.data$rating == weather_to_rating[rating_key])
+        ratings <- r$filtered_data %>%
+        # ratings <- data %>%
+          select(rating) %>%
+          complete(rating = 1:5) %>%
+          count(rating) %>%
+          mutate(percent = 100 * prop.table(n)) %>%
+          filter(.data$rating == weather_to_rating[rating_key])
+
+        percent <- glue(
+          "{ratings %>% pull(percent) %>% format(digits = 2, nsmall = 1)}%"
         )
 
         img_src <- glue("animated_svgs/{weather_to_svg[rating_key]}.svg")
-        out <- tile(count, img_src, weather_to_alt_text[rating_key])
+        out <- tile(percent, img_src, weather_to_alt_text[rating_key])
       }
 
       if (!is.null(day)) {

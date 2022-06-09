@@ -38,6 +38,23 @@ mod_table_ui <- function(id, ...) {
 mod_table_server <- function(r, id, filter_col = NULL) {
   moduleServer(id, function(input, output, session) {
     output$table <- renderDataTable({
+
+      rating_to_image <- list(
+        `1` = "day",
+        `2` = "cloudy-day-3",
+        `3` = "cloudy",
+        `4` = "rainy-6",
+        `5` = "thunder"
+      )
+
+      rating_to_alt_text = list(
+        `1` = "Sun icon",
+        `2` = "Sun and clouds icon",
+        `3` = "Clouds icon",
+        `4` = "Rainy cloud icon",
+        `5` = "Thunder cloud icon"
+      )
+
       table <- r$filtered_data
 
       if (!is.null(filter_col)) {
@@ -56,15 +73,20 @@ mod_table_server <- function(r, id, filter_col = NULL) {
           Rating = 3,
           Reason = 4
         ) %>%
+        filter(Reason != "") %>%
         arrange(
           desc(.data$Date),
           .data$Rating
         ) %>%
         mutate(
-          Date = format(.data$Date, format = "%a %d %b %Y")
+          Date   = format(.data$Date, format = "%a %d %b %Y"),
+          Rating = glue(
+            "<img order = {Rating} src='animated_svgs/{rating_to_image[Rating]}.svg'
+            alt='{rating_to_alt_text[Rating]}' height='50'></img>"
+          )
         )
 
-      datatable(table, rownames = FALSE)
+      datatable(table, escape=FALSE, rownames = FALSE)
     })
   })
 }
