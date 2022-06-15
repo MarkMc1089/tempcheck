@@ -14,7 +14,7 @@
 #' @importFrom highcharter hc_plotOptions hc_tooltip hc_xAxis hc_yAxis hcaes
 #' @importFrom highcharter highchart highchartOutput renderHighchart
 #' @importFrom httr GET add_headers content
-#' @importFrom lubridate dmy wday
+#' @importFrom lubridate dmy now wday
 #' @importFrom purrr map
 #' @importFrom rlang .data := sym
 #' @importFrom shiny NS br column div fluidPage fluidRow h1 h2 HTML img
