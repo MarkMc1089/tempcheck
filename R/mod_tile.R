@@ -15,8 +15,10 @@ mod_tile_ui <- function(id){
 #' tile Server Function
 #'
 #' @noRd
-mod_tile_server <- function(r, id, rating_key = NULL, day = NULL){
+mod_tile_server <- function(r, id, rating_key = NULL, value = NULL){
   moduleServer(id, function(input, output, session){
+
+    cohort_size <- 117 * ceiling(as.integer(difftime(now(), as.Date("2022/06/07"))) / 7)
 
     weather_to_rating <- list(
       sun         = 1,
@@ -54,26 +56,34 @@ mod_tile_server <- function(r, id, rating_key = NULL, day = NULL){
           mutate(percent = 100 * prop.table(n)) %>%
           filter(.data$rating == weather_to_rating[rating_key])
 
-        percent <- glue(
-          "{ratings %>% pull(percent) %>% format(digits = 2, nsmall = 1)}%"
-        )
+        percent <- glue("{ratings %>% pull(percent) %>% round()}%")
 
         img_src <- glue("animated_svgs/{weather_to_svg[rating_key]}.svg")
         out <- tile(percent, img_src, weather_to_alt_text[rating_key])
       }
 
-      if (!is.null(day)) {
-        avg_rating <- r$filtered_data %>%
-          mutate(weekday = tolower(wday(.data$date, label = TRUE))) %>%
-          group_by(weekday) %>%
-          summarise(avg_rating = floor(mean(rating, na.rm=TRUE))) %>%
-          filter(weekday == day) %>%
-          pull(avg_rating)
+      if (!is.null(value)) {
 
-        rating_key <- rating_to_weather[as.character(avg_rating)]
+        if (value == "count") {
+          count <- nrow(r$filtered_data)
+          count <- tagList(
+            span("Total Responses"),
+            count
+          )
 
-        img_src <- glue("animated_svgs/{weather_to_svg[rating_key]}.svg")
-        out <- tile(toupper(day), img_src, weather_to_alt_text[rating_key])
+          out <- tile(count)
+        }
+
+        if (value == "rate") {
+          rate <- 100 * nrow(r$data) / cohort_size
+          rate <- glue("{round(rate)}%")
+          rate <- tagList(
+            span("Response Rate"),
+            rate
+          )
+
+          out <- tile(rate)
+        }
       }
 
       out

@@ -18,8 +18,9 @@ mod_fixed_header_ui <- function(id) {
         fluidRow(
           col_3(
             div(
-              h1("Tempcheck"),
-              span("Internal mood survey results", style = "font-size: 10pt")
+              style = "height: 64 px; display: flex; flex-direction: column;
+                      justify-content: center;",
+              h1("NHSBSA Weekly Staff Survey"),
             ),
           ),
           col_7(

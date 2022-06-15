@@ -2,6 +2,7 @@
 #'
 #' @noRd
 app_server <- function(input, output, session) {
+
   eval_lines(".snap-credentials")
 
   r <- rv()
@@ -36,10 +37,7 @@ app_server <- function(input, output, session) {
   mod_tile_server(r, "count_cloud", "cloud")
   mod_tile_server(r, "count_cloud_rain", "cloud_rain")
   mod_tile_server(r, "count_cloud_storm", "cloud_storm")
-  # mod_tile_server(r, "avg_mon", day = "mon")
-  # mod_tile_server(r, "avg_tue", day = "tue")
-  # mod_tile_server(r, "avg_wed", day = "wed")
-  # mod_tile_server(r, "avg_thu", day = "thu")
-  # mod_tile_server(r, "avg_fri", day = "fri")
+  mod_tile_server(r, "response_count", value = "count")
+  mod_tile_server(r, "response_rate", value = "rate")
   mod_table_server(r, "table_1")
 }

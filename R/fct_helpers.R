@@ -155,20 +155,39 @@ content_box <- function(title, ...) {
   )
 }
 
-tile <- function (value, img_src, alt_text, bg_colour = "#005ebf", height = "64px") {
-  div(
-    style = glue("background-color: {bg_colour}; height: {height}; border-radius: 4px"),
+tile <- function (value, img_src = NULL, alt_text = NULL, bg_colour = "#005ebf", height = "64px") {
+  if (!is.null(img_src)) {
+    stopifnot(!is.null(alt_text))
+
     div(
-      style = "color: black; font-weight: bold;",
-      div(img(src = img_src, alt = alt_text)),
+      style = glue("background-color: {bg_colour}; height: {height}; border-radius: 4px"),
       div(
-        class = "tile",
-        style = glue(
-          "height: {height}; display: flex; flex-direction: column;
-          justify-content: center;"
-        ),
-        value
+        style = "color: black; font-weight: bold;",
+        div(img(src = img_src, alt = alt_text)),
+        div(
+          class = "tile",
+          style = glue(
+            "height: {height}; display: flex; flex-direction: column;
+            justify-content: center;"
+          ),
+          value
+        )
       )
     )
-  )
+  } else {
+    div(
+      style = glue("background-color: {bg_colour}; height: {height}; border-radius: 4px"),
+      div(
+        style = "color: black; font-weight: bold;",
+        div(
+          class = "tile-text-only",
+          style = glue(
+            "height: {height}; display: flex; flex-direction: column;
+          justify-content: center;"
+          ),
+          value
+        )
+      )
+    )
+  }
 }

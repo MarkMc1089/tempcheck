@@ -23,17 +23,14 @@ app_ui <- function(request) {
           col_1()
         ),
         br(),
-        # fluidRow(
-        #   style="text-align: -webkit-center;",
-        #   col_1(),
-        #   col_2(mod_tile_ui("avg_mon")),
-        #   col_2(mod_tile_ui("avg_tue")),
-        #   col_2(mod_tile_ui("avg_wed")),
-        #   col_2(mod_tile_ui("avg_thu")),
-        #   col_2(mod_tile_ui("avg_fri")),
-        #   col_1()
-        # ),
-        # br(),
+        fluidRow(
+          style="text-align: -webkit-center;",
+          col_4(),
+          col_2(mod_tile_ui("response_count")),
+          col_2(mod_tile_ui("response_rate")),
+          col_4()
+        ),
+        br(),
         mod_table_ui("table_1")
       )
     ),
@@ -64,7 +61,7 @@ golem_add_external_resources <- function() {
     ),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "Tempcheck"
+      app_title = "NHSBSA Weekly Staff Survey"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()
