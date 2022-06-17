@@ -14,7 +14,7 @@ app_server <- function(input, output, session) {
       'X-USERNAME' = SNAP_USER,
       'X-API-KEY'  = SNAP_API_KEY
     ),
-    list(restrictedVariables = "V18,V56,V58,V49"),
+    list(restrictedVariables = "V18,V56,V58,V49", maxResponses = "5000"),
     col_names <- c("date", "team", "rating", "reason"),
     maps = list(
       team = c(
