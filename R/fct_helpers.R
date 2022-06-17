@@ -88,6 +88,12 @@ snap_to_df <- function(snap_url, headers = character(0), query = character(0),
 load_data <- function(r, snap_url, headers, query, col_names, ...) {
   tryCatch(
     data <- snap_to_df(snap_url, headers, query, col_names),
+    print(
+      glue(
+        "Data read, total responses are {nrow(data)} with latest response on \\
+        {max(data$date)}"
+      )
+    ),
     error = function(e) {
       print(
         glue(
@@ -102,7 +108,7 @@ load_data <- function(r, snap_url, headers, query, col_names, ...) {
   )
 
   tryCatch(
-    r$data <- data_prep(data, ...),
+    r$data <- r$filtered_data <- data_prep(data, ...),
     error = function(e) {
       print(
         glue(
