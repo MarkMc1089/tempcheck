@@ -134,6 +134,12 @@ a {
     text-decoration: none;
 }
 
+#global-global_select {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    height: 30px;
+}
+
 @media only screen and (min-width: 1381px) {
   .tile {
     font-size: xxx-large;

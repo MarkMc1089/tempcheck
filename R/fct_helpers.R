@@ -161,6 +161,7 @@ content_box <- function(title, ...) {
   )
 }
 
+
 tile <- function (value, img_src = NULL, alt_text = NULL, bg_colour = "#005ebf", height = "64px") {
   if (!is.null(img_src)) {
     stopifnot(!is.null(alt_text))
@@ -196,4 +197,31 @@ tile <- function (value, img_src = NULL, alt_text = NULL, bg_colour = "#005ebf",
       )
     )
   }
+}
+
+# Usage: What is the date of next Friday?
+# nextweekday(now(), 6)
+# 1 = Sunday ... 7 = Saturday
+# Or use weekday itself e.g.
+# nextweekday(now(), "Friday")
+# nextweekday(now(), "Fri")
+# nextweekday(now(), "fri")
+nextweekday <- function(date, wday) {
+  # if_else(
+  #   class(wday) == "character",
+  #   as.integer(
+  #     factor(
+  #       substring(tolower(wday), 1, 3),
+  #       levels=c("sun", "mon", "tue", "wed", "thu", "fri", "sat"),
+  #       ordered=TRUE
+  #     )
+  #   ),
+  #   as.integer(wday)
+  # )
+
+  date <- as.Date(date)
+  diff <- wday - wday(date)
+  if( diff < 0 )
+    diff <- diff + 7
+  return(date + diff)
 }

@@ -49,7 +49,6 @@ mod_tile_server <- function(r, id, rating_key = NULL, value = NULL){
     output$tile <- renderUI({
       if (!is.null(rating_key)) {
         ratings <- r$filtered_data %>%
-        # ratings <- data %>%
           select(rating) %>%
           complete(rating = 1:5) %>%
           count(rating) %>%
