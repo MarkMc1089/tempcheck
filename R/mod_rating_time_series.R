@@ -32,10 +32,11 @@ mod_rating_time_series_server <- function(r, id){
         ) %>%
         group_by(date, rating) %>%
         summarise(n = n(), .groups = "drop_last") %>%
+        ungroup() %>%
         mutate(per = n / sum(n)) %>%
         suppressWarnings() %>%
-        complete(nesting(date, rating), fill = list(n = 0, per = 0)) %>%
-        pivot_wider(rating, n, per) %>%
+        complete(nesting(date, per), fill = list(per = 0)) %>%
+        pivot_wider(names_from = rating, values_from = per) %>%
         setNames(c("date", "sunny", "sunny_with_clouds", "cloudy", "rainy", "stormy"))
 
         cols <- viridis(5)
