@@ -26,12 +26,12 @@ mod_rating_time_series_server <- function(r, id){
           week_num = (year(date) - year(min(date))) * 52 + week(date) - week(min(date)),
           date = nextweekday(min(date) %m+% weeks(week_num), "Friday")
         ) %>%
+        suppressWarnings() %>%
         group_by(date, rating) %>%
         summarise(n = n(), .groups = "drop_last") %>%
         complete(crossing(rating = 1:5), fill = list(n = 0)) %>%
-        ungroup() %>%
         mutate(per = round(100 * n / sum(n), 1)) %>%
-        suppressWarnings() %>%
+        ungroup() %>%
         pivot_wider(names_from = rating, values_from = c(per, n)) %>%
         mutate(base = rowSums(select(., starts_with("n"))))
 

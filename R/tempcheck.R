@@ -9,12 +9,15 @@
 #' @importFrom dplyr filter group_by left_join mutate n pull rename rename_with
 #' @importFrom dplyr rowwise select slice summarise transmute ungroup
 #' @importFrom DT dataTableOutput renderDataTable datatable
+#' @importFrom ggplot2 aes element_blank element_text geom_col ggplot labs
+#' @importFrom ggplot2 scale_fill_manual scale_x_date theme theme_classic
 #' @importFrom glue glue
 #' @importFrom highcharter hc_add_series hc_annotations hc_exporting hc_legend
 #' @importFrom highcharter hc_plotOptions hc_tooltip hc_xAxis hc_yAxis hcaes
 #' @importFrom highcharter highchart highchartOutput renderHighchart JS
 #' @importFrom httr GET add_headers content
 #' @importFrom lubridate %m+% dmy now wday week weeks year
+#' @importFrom plotly config ggplotly layout plotlyOutput renderPlotly
 #' @importFrom purrr map
 #' @importFrom rlang .data := sym
 #' @importFrom shiny NS br column div fluidPage fluidRow h1 h2 HTML img

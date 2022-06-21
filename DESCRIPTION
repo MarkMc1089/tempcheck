@@ -12,6 +12,7 @@ Imports:
     config (>= 0.3.1),
     dplyr,
     DT (>= 0.19),
+    ggplot2,
     glue,
     golem (>= 0.3.1),
     highcharter (>= 0.8.2),
@@ -21,12 +22,14 @@ Imports:
     markdown (>= 1.1),
     nhsbsaR (>= 0.0.0.9000),
     pkgload (>= 1.2.3),
+    plotly,
     purrr,
     rlang (>= 0.4.11),
     shiny (>= 1.6.0),
-    tidyr,
+    stats,
     stringr,
-    stats
+    tidyr,
+    viridis
 Remotes:
     nhsbsa-data-analytics/nhsbsaR
 Encoding: UTF-8
