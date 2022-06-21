@@ -39,5 +39,6 @@ app_server <- function(input, output, session) {
   mod_tile_server(r, "count_cloud_storm", "cloud_storm")
   mod_tile_server(r, "response_count", value = "count")
   mod_tile_server(r, "response_rate", value = "rate")
+  mod_rating_time_series_server(r, "rating_ts")
   mod_table_server(r, "table_1")
 }

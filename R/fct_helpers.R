@@ -207,17 +207,17 @@ tile <- function (value, img_src = NULL, alt_text = NULL, bg_colour = "#005ebf",
 # nextweekday(now(), "Fri")
 # nextweekday(now(), "fri")
 nextweekday <- function(date, wday) {
-  # if_else(
-  #   class(wday) == "character",
-  #   as.integer(
-  #     factor(
-  #       substring(tolower(wday), 1, 3),
-  #       levels=c("sun", "mon", "tue", "wed", "thu", "fri", "sat"),
-  #       ordered=TRUE
-  #     )
-  #   ),
-  #   as.integer(wday)
-  # )
+  wday <- ifelse(
+    class(wday) == "character",
+    as.integer(
+      factor(
+        substring(tolower(wday), 1, 3),
+        levels=c("sun", "mon", "tue", "wed", "thu", "fri", "sat"),
+        ordered=TRUE
+      )
+    ),
+    as.integer(wday)
+  )
 
   date <- as.Date(date)
   diff <- wday - wday(date)
