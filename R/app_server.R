@@ -23,7 +23,7 @@ app_server <- function(input, output, session) {
       )
     ),
     transforms <- list(
-      # date = dmy,
+      date = dmy,
       rating = as.integer
     )
   )
