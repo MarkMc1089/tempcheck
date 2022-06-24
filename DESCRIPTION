@@ -29,6 +29,7 @@ Imports:
     stats,
     stringr,
     tidyr,
+    usethis,
     viridis
 Remotes:
     nhsbsa-data-analytics/nhsbsaR

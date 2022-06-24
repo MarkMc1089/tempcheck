@@ -31,8 +31,8 @@ app_ui <- function(request) {
           col_4()
         ),
         br(),
-        mod_rating_time_series_ui("rating_ts"),
-        br(),
+        # mod_rating_time_series_ui("rating_ts"),
+        # br(),
         mod_rating_stacked_vertical_ui("rating_sv"),
         br(),
         mod_table_ui("table_1")

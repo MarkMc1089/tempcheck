@@ -24,6 +24,7 @@
 #' @importFrom shiny moduleServer reactive renderUI selectInput
 #' @importFrom shiny shinyApp tagAppendAttributes tagList tags uiOutput
 #' @importFrom tidyr complete crossing nesting pivot_wider starts_with
+#' @importFrom usethis use_data
 #' @importFrom viridis viridis
 NULL
 

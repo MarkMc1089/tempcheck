@@ -15,7 +15,7 @@ data_prep <- function(raw_data, maps, transforms) {
       across(names(transforms), ~ transforms[[cur_column()]](.x))
     )
 
-  save(data, file = "data/data.rda")
+  use_data(data, overwrite = TRUE)
 
   data
 }

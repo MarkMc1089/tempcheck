@@ -37,10 +37,10 @@ mod_fixed_header_ui <- function(id) {
                   "global",
                   label = "Date range:",
                   format = "dd-mm-yyyy",
-                  start  = min(unique(data$date)),
-                  end    = max(unique(data$date)),
-                  min    = min(unique(data$date)),
-                  max    = max(unique(data$date)),
+                  start  = dmy("07/06/2022"),
+                  end    = now(),
+                  min    = dmy("07/06/2022"),
+                  max    = now(),
                   separator = " - ",
                   width = "100%"
                 )
@@ -68,7 +68,7 @@ mod_fixed_header_ui <- function(id) {
 #' @description Not needed currently.
 #'
 #' @noRd
-mod_fixed_header_server <- function(id) {
+mod_fixed_header_server <- function(r, id) {
   moduleServer(id, function(input, output, session) {
 
   })
