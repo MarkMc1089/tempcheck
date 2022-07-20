@@ -25,7 +25,8 @@ mod_rating_stacked_vertical_server <- function(r, id){
         `4` = "Rainy",
         `5` = "Stormy"
       )
-      colours = substr(viridis(5), 0, 7)
+      #colours = rev(substr(viridis(5), 0, 7))
+      colours = c("#eba134", "#ebe134", "#34cfeb", "#3434eb", "#eb34ae")
 
       chart <- r$filtered_data %>%
         select(date, rating) %>%

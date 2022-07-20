@@ -23,19 +23,11 @@ app_ui <- function(request) {
           col_1()
         ),
         br(),
-        fluidRow(
-          style="text-align: -webkit-center;",
-          col_4(),
-          col_2(mod_tile_ui("response_count")),
-          col_2(mod_tile_ui("response_rate")),
-          col_4()
-        ),
+        mod_response_rate_time_series_ui("rating_ts"),
         br(),
-        # mod_rating_time_series_ui("rating_ts"),
-        # br(),
         mod_rating_stacked_vertical_ui("rating_sv"),
         br(),
-        mod_table_ui("table_1")
+        mod_table_ui("comments")
       )
     ),
     br(),br(),

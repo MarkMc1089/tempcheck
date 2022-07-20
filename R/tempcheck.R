@@ -6,8 +6,8 @@
 #' @name tempcheck
 #'
 #' @importFrom dplyr arrange between bind_rows case_when cur_column count desc
-#' @importFrom dplyr filter group_by left_join mutate n pull rename rename_with
-#' @importFrom dplyr rowwise select slice summarise transmute ungroup
+#' @importFrom dplyr filter group_by group_split left_join mutate n pull rename
+#' @importFrom dplyr rename_with rowwise select slice summarise transmute ungroup
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom ggplot2 aes element_blank element_text geom_col ggplot labs
 #' @importFrom ggplot2 scale_fill_manual scale_x_date theme theme_classic

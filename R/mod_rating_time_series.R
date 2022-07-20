@@ -1,4 +1,4 @@
-#' rating_time_series UI Function
+#' response_rate_time_series UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -7,80 +7,61 @@
 #' @noRd
 #'
 #' @importFrom shiny NS tagList
-mod_rating_time_series_ui <- function(id){
+mod_response_rate_time_series_ui <- function(id){
   ns <- NS(id)
   tagList(
-    highchartOutput(ns("rating_time_series"))
+    highchartOutput(ns("response_rate_time_series"))
   )
 }
 
-#' rating_time_series Server Functions
+#' response_rate_time_series Server Functions
 #'
 #' @noRd
-mod_rating_time_series_server <- function(r, id){
+mod_response_rate_time_series_server <- function(r, id){
   moduleServer(id, function(input, output, session){
-    output$rating_time_series <- renderHighchart({
+
+    cohort_size = list(
+      "Data & Insight" = 117,
+      "Digital"        = 213
+    )
+
+    output$response_rate_time_series <- renderHighchart({
       chart <- r$filtered_data %>%
-        select(date, rating) %>%
+        select(date, team) %>%
+        na.omit() %>%
         mutate(
           week_num = (year(date) - year(min(date))) * 52 + week(date) - week(min(date)),
           date = nextweekday(min(date) %m+% weeks(week_num), "Friday")
         ) %>%
         suppressWarnings() %>%
-        group_by(date, rating) %>%
-        summarise(n = n(), .groups = "drop_last") %>%
-        complete(crossing(rating = 1:5), fill = list(n = 0)) %>%
-        mutate(per = round(100 * n / sum(n), 1)) %>%
-        ungroup() %>%
-        pivot_wider(names_from = rating, values_from = c(per, n)) %>%
-        mutate(base = rowSums(select(., starts_with("n"))))
+        group_by(team, date) %>%
+        summarise(n = n()) %>%
+        mutate(
+          cohort = as.numeric(paste(cohort_size[team])),
+          response_rate = round(100 * n / cohort)
+        )
 
-        cols <- viridis(5)
-        cols <- substr(cols, 0, 7)
+        charts <- chart %>% group_split()
 
-        highchart() %>%
-          hc_add_series(
+        hc <- highchart()
+
+        for (chart in charts) {
+          hc <- hc %>% hc_add_series(
             chart,
             type = "line",
-            hcaes(x = date, y = per_1, b = n_1),
-            name = "Sunny",
-            color = cols[1]
-          ) %>%
-          hc_add_series(
-            chart,
-            hcaes(x = date, y = per_2, b = n_2),
-            type = "line",
-            name = "Partially Sunny",
-            color = cols[2]
-          ) %>%
-          hc_add_series(
-            chart,
-            hcaes(x = date, y = per_3, b = n_3),
-            type = "line",
-            name = "Cloudy",
-            color = cols[3]
-          ) %>%
-          hc_add_series(
-            chart,
-            hcaes(x = date, y = per_4, b = n_4),
-            type = "line",
-            name = "Rainy",
-            color = cols[4]
-          ) %>%
-          hc_add_series(
-            chart,
-            type = "line",
-            hcaes(x = date, y = per_5, b = n_5),
-            name = "Stormy",
-            color = cols[5]
-          ) %>%
+            hcaes(x = date, y = response_rate),
+            name = chart$team %>% unique()
+          )
+        }
+
+        hc %>%
           hc_xAxis(
             type = "datetime",
             crosshair = list(
               enabled = TRUE
             )
           ) %>%
-          hc_yAxis(min = 0) %>%
+          hc_yAxis(title = list(text = "Response Rate (%)"), min = 0) %>%
           hc_tooltip(
             formatter = JS("
               function () {

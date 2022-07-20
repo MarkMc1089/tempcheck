@@ -15,7 +15,7 @@ mod_tile_ui <- function(id){
 #' tile Server Function
 #'
 #' @noRd
-mod_tile_server <- function(r, id, rating_key = NULL, value = NULL){
+mod_tile_server <- function(r, id, rating_key = NULL, type = NULL){
   moduleServer(id, function(input, output, session){
 
     cohort_size <- 117 * ceiling(as.integer(difftime(now(), as.Date("2022/06/07"))) / 7)
@@ -61,9 +61,9 @@ mod_tile_server <- function(r, id, rating_key = NULL, value = NULL){
         out <- tile(percent, img_src, weather_to_alt_text[rating_key])
       }
 
-      if (!is.null(value)) {
+      if (!is.null(type)) {
 
-        if (value == "count") {
+        if (type == "count") {
           count <- nrow(r$filtered_data)
           count <- tagList(
             span("Total Responses"),
@@ -73,7 +73,7 @@ mod_tile_server <- function(r, id, rating_key = NULL, value = NULL){
           out <- tile(count)
         }
 
-        if (value == "rate") {
+        if (type == "rate") {
           rate <- 100 * nrow(r$data) / cohort_size
           rate <- glue("{round(rate)}%")
           rate <- tagList(
