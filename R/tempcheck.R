@@ -5,7 +5,7 @@
 #' @docType package
 #' @name tempcheck
 #'
-#' @importFrom dplyr arrange between bind_rows case_when cur_column count desc
+#' @importFrom dplyr arrange as_tibble between bind_rows case_when cur_column count desc
 #' @importFrom dplyr filter group_by group_split left_join mutate n pull rename
 #' @importFrom dplyr rename_with rowwise select slice summarise transmute ungroup
 #' @importFrom DT dataTableOutput renderDataTable datatable

@@ -12,25 +12,39 @@ app_ui <- function(request) {
     br(),br(),
     tags$main(
       fluidPage(
-        fluidRow(
-          style="text-align: -webkit-center;",
-          col_1(),
-          col_2(mod_tile_ui("count_sun")),
-          col_2(mod_tile_ui("count_sun_cloud")),
-          col_2(mod_tile_ui("count_cloud")),
-          col_2(mod_tile_ui("count_cloud_rain")),
-          col_2(mod_tile_ui("count_cloud_storm")),
-          col_1()
+        content_box(
+          "Ratings",
+          fluidRow(
+            style="text-align: -webkit-center;",
+            col_1(),
+            col_2(mod_tile_ui("count_sun")),
+            col_2(mod_tile_ui("count_sun_cloud")),
+            col_2(mod_tile_ui("count_cloud")),
+            col_2(mod_tile_ui("count_cloud_rain")),
+            col_2(mod_tile_ui("count_cloud_storm")),
+            col_1()
+          )
         ),
         br(),
-        mod_response_rate_time_series_ui("rating_ts"),
+        content_box(
+          "Response Rates",
+          mod_response_table_ui("response_rate"),
+          br(),
+          mod_response_rate_time_series_ui("rating_ts"),
+        ),
         br(),
-        mod_rating_stacked_vertical_ui("rating_sv"),
+        content_box(
+          "Trend",
+          mod_rating_stacked_vertical_ui("rating_sv")
+        ),
         br(),
-        mod_table_ui("comments")
+        content_box(
+          "Comments",
+          mod_comment_table_ui("comments")
+        )
       )
     ),
-    br(),br(),
+    br(), br(),
     mod_footer_ui("footer_1")
   )
 }

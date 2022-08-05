@@ -59,6 +59,19 @@ mod_response_rate_time_series_server <- function(r, id){
             type = "datetime",
             crosshair = list(
               enabled = TRUE
+            ),
+            labels = list(
+              formatter = JS("
+                function() {
+                  return 'Week ' + Highcharts.dateFormat(
+                    '%B %d',
+                    this.value
+                  ) + ' - ' + Highcharts.dateFormat(
+                    '%B %d',
+                    this.value + 1000 * 60 * 60 * 24 * 7 - 1
+                  )
+                }
+              ")
             )
           ) %>%
           hc_yAxis(title = list(text = "Response Rate (%)"), min = 0) %>%
@@ -73,7 +86,6 @@ mod_response_rate_time_series_server <- function(r, id){
                 return ['<b>' + dtf.format(this.x) + '</b>'].concat(
                   this.points ?
                     this.points.map(function (point) {
-                    console.log(point)
                       b = point.point.b ? ' (base: ' + point.point.b + ')' : '';
                       c = point.point.c ? '<br>' + point.point.c : ''
                       return '<span style=\"color: ' + point.series.color + '\"><strong>' + point.series.name + ': ' + point.y + ' ' + b + '</strong></span>' + c;

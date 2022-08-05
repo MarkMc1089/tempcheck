@@ -1,13 +1,13 @@
-#' table UI Function
+#' comment_table UI Function
 #'
-#' @description Shows a table, optionally with a select input to filter it.
+#' @description Shows a table of comments, optionally with a select input to filter it.
 #'
 #' @param id A unique ID for the the module.
 #' @param ... Arguments for the associated `selectInput`.
 #' @inheritParams selectInput
 #'
 #' @noRd
-mod_table_ui <- function(id, ...) {
+mod_comment_table_ui <- function(id, ...) {
   ns <- NS(id)
 
   out <- dataTableOutput(ns("table"))
@@ -25,7 +25,7 @@ mod_table_ui <- function(id, ...) {
   out
 }
 
-#' table Server Function
+#' comment_table Server Function
 #'
 #' @description Creates a table with month, comment and NPS group. Includes a
 #' select input to filter to a specific group.
@@ -35,7 +35,7 @@ mod_table_ui <- function(id, ...) {
 #' @param filter_col If a `selectInput` is associated, the column it filters on.
 #'
 #' @noRd
-mod_table_server <- function(r, id, filter_col = NULL) {
+mod_comment_table_server <- function(r, id, filter_col = NULL) {
   moduleServer(id, function(input, output, session) {
     output$table <- renderDataTable({
 
