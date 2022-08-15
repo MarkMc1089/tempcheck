@@ -19,13 +19,8 @@ mod_response_rate_time_series_ui <- function(id){
 #' @noRd
 mod_response_rate_time_series_server <- function(r, id){
   moduleServer(id, function(input, output, session){
-
-    cohort_size = list(
-      "Data & Insight" = 117,
-      "Digital"        = 213
-    )
-
     output$response_rate_time_series <- renderHighchart({
+
       chart <- r$filtered_data %>%
         select(date, team) %>%
         na.omit() %>%
@@ -34,88 +29,106 @@ mod_response_rate_time_series_server <- function(r, id){
           date = nextweekday(min(date) %m+% weeks(week_num), "Friday")
         ) %>%
         suppressWarnings() %>%
-        group_by(team, date) %>%
+        group_by(date, team) %>%
         summarise(n = n()) %>%
+        ungroup() %>%
+        left_join(
+          tempcheck::cohort_size,
+          by = c("date" = "date", "team" = "team"),
+          keep = FALSE
+        ) %>%
         mutate(
-          cohort = as.numeric(paste(cohort_size[team])),
-          response_rate = round(100 * n / cohort)
+          response_rate = case_when(
+            size > 0 ~ round(100 * n / size),
+            TRUE ~ NA_real_
+          )
+        ) %>%
+        complete(
+          date, team,
+          fill = list(size = 0, n = 0, response_rate = NA_real_)
+        ) %>%
+        select(date, team, size, n, response_rate) %>%
+        arrange(
+          desc(date),
+          team
+        ) %>%
+        group_by(team)
+
+      charts <- chart %>% group_split()
+
+      hc <- highchart()
+
+      for (chart in charts) {
+        hc <- hc %>% hc_add_series(
+          chart,
+          type = "line",
+          hcaes(x = date, y = response_rate),
+          name = chart$team %>% unique()
         )
+      }
 
-        charts <- chart %>% group_split()
-
-        hc <- highchart()
-
-        for (chart in charts) {
-          hc <- hc %>% hc_add_series(
-            chart,
-            type = "line",
-            hcaes(x = date, y = response_rate),
-            name = chart$team %>% unique()
-          )
-        }
-
-        hc %>%
-          hc_xAxis(
-            type = "datetime",
-            crosshair = list(
-              enabled = TRUE
-            ),
-            labels = list(
-              formatter = JS("
-                function() {
-                  return 'Week ' + Highcharts.dateFormat(
-                    '%B %d',
-                    this.value
-                  ) + ' - ' + Highcharts.dateFormat(
-                    '%B %d',
-                    this.value + 1000 * 60 * 60 * 24 * 7 - 1
-                  )
-                }
-              ")
-            )
-          ) %>%
-          hc_yAxis(title = list(text = "Response Rate (%)"), min = 0) %>%
-          hc_tooltip(
+      hc %>%
+        hc_xAxis(
+          type = "datetime",
+          crosshair = list(
+            enabled = TRUE
+          ),
+          labels = list(
             formatter = JS("
-              function () {
-                // The first returned item is the header, subsequent items are the
-                // points
-                var options = {year: 'numeric', month: 'short', day: 'numeric'};
-                var dtf = new Intl.DateTimeFormat('en-EN', options);
-
-                return ['<b>' + dtf.format(this.x) + '</b>'].concat(
-                  this.points ?
-                    this.points.map(function (point) {
-                      b = point.point.b ? ' (base: ' + point.point.b + ')' : '';
-                      c = point.point.c ? '<br>' + point.point.c : ''
-                      return '<span style=\"color: ' + point.series.color + '\"><strong>' + point.series.name + ': ' + point.y + ' ' + b + '</strong></span>' + c;
-                    }) : []
-                );
-              }
-            "),
-            split = TRUE,
-            useHTML = TRUE
-          ) %>%
-          hc_plotOptions(
-            line = list(
-              marker = list(
-                radius = 4.5,
-                lineWidth = 0.75,
-                lineColor = "#000",
-                symbol = 'circle'
-              )
-            ),
-            series = list(
-              dataLabels = list(
-                enabled = TRUE,
-                style = list(
-                  color = "black",
-                  fontWeight = "bolder",
-                  fontSize = "15px"
+              function() {
+                return 'Week ' + Highcharts.dateFormat(
+                  '%B %d',
+                  this.value
+                ) + ' - ' + Highcharts.dateFormat(
+                  '%B %d',
+                  this.value + 1000 * 60 * 60 * 24 * 7 - 1
                 )
+              }
+            ")
+          )
+        ) %>%
+        hc_yAxis(title = list(text = "Response Rate (%)"), min = 0) %>%
+        hc_tooltip(
+          formatter = JS("
+            function () {
+              // The first returned item is the header, subsequent items are the
+              // points
+              var options = {year: 'numeric', month: 'short', day: 'numeric'};
+              var dtf = new Intl.DateTimeFormat('en-EN', options);
+
+              return ['<b>' + dtf.format(this.x) + '</b>'].concat(
+                this.points ?
+                  this.points.map(function (point) {
+                    b = point.point.b ? ' (base: ' + point.point.b + ')' : '';
+                    c = point.point.c ? '<br>' + point.point.c : ''
+                    return '<span style=\"color: ' + point.series.color + '\"><strong>' + point.series.name + ': ' + point.y + ' ' + b + '</strong></span>' + c;
+                  }) : []
+              );
+            }
+          "),
+          split = TRUE,
+          useHTML = TRUE
+        ) %>%
+        hc_plotOptions(
+          line = list(
+            marker = list(
+              radius = 4.5,
+              lineWidth = 0.75,
+              lineColor = "#000",
+              symbol = 'circle'
+            )
+          ),
+          series = list(
+            dataLabels = list(
+              enabled = TRUE,
+              style = list(
+                color = "black",
+                fontWeight = "bolder",
+                fontSize = "15px"
               )
             )
           )
-      })
+        )
+    })
   })
 }

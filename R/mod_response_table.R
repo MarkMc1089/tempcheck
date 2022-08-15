@@ -33,25 +33,13 @@ mod_response_table_ui <- function(id, ...) {
 #'
 #' @param r A `reactiveValues` object.
 #' @param id A unique ID for the the module.
-#' @param filter_col If a `selectInput` is associated, the column it filters on.
 #'
 #' @noRd
-mod_response_table_server <- function(r, id, filter_col = NULL) {
+mod_response_table_server <- function(r, id) {
   moduleServer(id, function(input, output, session) {
     output$table <- renderDataTable({
 
-      table <- r$filtered_data
-
-      if (!is.null(filter_col)) {
-        if (input[[glue("{id}_select")]] != "All") {
-          table <- table %>%
-            filter(
-              .data[[filter_col]] == input[[glue("{id}_select")]]
-            )
-        }
-      }
-
-      table <- table %>%
+      table <- r$filtered_data %>%
         select(date, team) %>%
         na.omit() %>%
         mutate(
@@ -67,12 +55,8 @@ mod_response_table_server <- function(r, id, filter_col = NULL) {
           by = c("date" = "date", "team" = "team"),
           keep = FALSE
         ) %>%
-        arrange(
-          desc(date),
-          team
-        ) %>%
         mutate(
-          date = format(date, format = "%a %d %b %Y"),
+          formatted_date = format(date, format = "%a %d %b %Y"),
           response_rate = case_when(
             size > 0 ~ round(100 * n / size),
             TRUE ~ NA_real_
@@ -82,7 +66,15 @@ mod_response_table_server <- function(r, id, filter_col = NULL) {
             TRUE ~ "No survey sent to team"
           )
         ) %>%
-        select(date, team, size, n, response_rate)
+        complete(
+          nesting(date, formatted_date), team,
+          fill = list(size = 0, n = 0, response_rate = "No survey sent to team")
+        ) %>%
+        select(date, formatted_date, team, size, n, response_rate) %>%
+        arrange(
+          desc(date),
+          team
+        )
 
       datatable(
         table,
@@ -90,7 +82,12 @@ mod_response_table_server <- function(r, id, filter_col = NULL) {
         rownames = FALSE,
         colnames = c("Date", "Team", "Cohort Size", "Responses", "Response Rate"),
         options = list(
-          columnDefs = list(list(className = 'dt-center', targets = "_all")),
+          columnDefs = list(
+            list(className = 'dt-center', targets = "_all"),
+            list(orderable = TRUE, targets = 0),
+            list(orderData = 0, targets = 1),
+            list(visible = FALSE, targets = 0)
+          ),
           searching = FALSE
         )
       )

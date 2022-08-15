@@ -67,26 +67,34 @@ mod_comment_table_server <- function(r, id, filter_col = NULL) {
       }
 
       table <- table %>%
-        rename(
-          Date   = 1,
-          Team   = 2,
-          Rating = 3,
-          Reason = 4
-        ) %>%
-        filter(Reason != "") %>%
+        filter(reason != "") %>%
         arrange(
-          desc(.data$Date),
-          .data$Rating
+          desc(.data$date),
+          .data$rating
         ) %>%
         mutate(
-          Date   = format(.data$Date, format = "%a %d %b %Y"),
-          Rating = glue(
-            "<img order = {Rating} src='animated_svgs/{rating_to_image[Rating]}.svg'
-            alt='{rating_to_alt_text[Rating]}' height='50'></img>"
+          formatted_date = format(.data$date, format = "%a %d %b %Y"),
+          rating = glue(
+            "<img order = {rating} src='animated_svgs/{rating_to_image[rating]}.svg'
+            alt='{rating_to_alt_text[rating]}' height='50'></img>"
+          )
+        ) %>%
+        select(date, formatted_date, team, rating, reason)
+
+      datatable(
+        table,
+        escape=FALSE,
+        rownames = FALSE,
+        colnames = c("", "Date", "Team", "Rating", "Reason"),
+        options = list(
+          columnDefs = list(
+            list(className = 'dt-center', targets = "_all"),
+            list(orderable = TRUE, targets = 0),
+            list(orderData = 0, targets = 1),
+            list(visible = FALSE, targets = 0)
           )
         )
-
-      datatable(table, escape=FALSE, rownames = FALSE)
+      )
     })
   })
 }
