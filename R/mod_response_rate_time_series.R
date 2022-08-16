@@ -85,7 +85,8 @@ mod_response_rate_time_series_server <- function(r, id){
                 )
               }
             ")
-          )
+          ),
+          tickInterval = 7 * 24 * 3600 * 1000
         ) %>%
         hc_yAxis(title = list(text = "Response Rate (%)"), min = 0) %>%
         hc_tooltip(
