@@ -50,6 +50,10 @@ mod_response_table_server <- function(r, id) {
         group_by(date, team) %>%
         summarise(n = n()) %>%
         ungroup() %>%
+        complete(
+          date = seq.Date(min(date), max(date), by="week"),
+          team
+        ) %>%
         left_join(
           tempcheck::cohort_size,
           by = c("date" = "date", "team" = "team"),
